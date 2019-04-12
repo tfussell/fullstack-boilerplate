@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig-base.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "sourceMap": true,
+    "target": "es5",
+    "removeComments": true,
+  }
+}
