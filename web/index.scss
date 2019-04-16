@@ -1,5 +1,43 @@
 @import "./common/reset.scss";
 
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-size: 16px;
+    color: #222;
+    padding: 0 3rem 1rem 3rem;
+    font-family: 'Lato', 'sans serif';
+}
+
 h1 {
-    color: green;
+    margin-bottom: 2em;
+    font-size: 28px;
+    letter-spacing: -2px;
+    line-height: 1em;
+    font-weight: 500;
+    font-style: normal;
+    letter-spacing: 0em;
+    color: #222;
+}
+
+img.logo {
+    width: 170px;
+    margin: 2em 0 0.5em;
+}
+
+.ReactTable {
+    margin: 1em 0;
+
+    .rt-tr.-odd {
+        background: #4f9c63;
+    }
+}
+
+.ReactTable.-striped {
+    .rt-tr.-odd {
+        background: rgba(79,156,99,0.2);
+    }
 }

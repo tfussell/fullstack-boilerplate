@@ -14,7 +14,13 @@ export const checkDb = async () => {
 
   while (retry < maxRetries) {
     try {
-      await initializeDbConnection();
+      const connection = await initializeDbConnection();
+      await connection.close();
+      Object.keys(require.cache).forEach((key) => {
+        if (key.endsWith("/fullstack-boilerplate/api/config/postgres.ts")) {
+          delete require.cache[key];
+        }
+      });
       log(chalk.greenBright(`✓ PostgreSQL Ready`));
       return;
     } catch {

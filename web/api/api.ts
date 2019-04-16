@@ -58,32 +58,268 @@ export namespace Api {
   };
 
 
-    export interface IWidget {
+    export interface Location {
+      /**
+       * Unique Identifier
+       */
       id: number;
-      label: string;
-      color: string;
+      /**
+       * Date of updated
+       */
+      createdAt: Date;
+      /**
+       * Date of updated
+       */
+      latitude: number;
+      /**
+       * Date of updated
+       */
+      longitude: number;
+      /**
+       * Date of updated
+       */
+      speed: number;
+      /**
+       * Date of updated
+       */
+      userId: string;
+      /**
+       * Date of updated
+       */
+      isMoving: boolean;
+      /**
+       * Date of updated
+       */
+      activityType: string;
+      /**
+       * Date of updated
+       */
+      batteryLevel: number;
+    }
+
+    export interface IUserStats {
+    }
+
+    export interface ILocationStats {
+      average: number;
+      count: number;
+      sum: number;
+      min: any;
+      max: any;
+    }
+
+    export interface Order {
+      /**
+       * Unique Identifier
+       */
+      id: string;
+      /**
+       * Date of updated
+       */
+      runnerId: string;
+      /**
+       * Date of updated
+       */
+      pickedUpAt: Date;
+      /**
+       * Date of updated
+       */
+      dropoffTime: Date;
+    }
+
+    export interface Shift {
+      /**
+       * Unique Identifier
+       */
+      id: string;
+      /**
+       * Date of updated
+       */
+      start: Date;
+      /**
+       * Date of updated
+       */
+      stop: Date;
+      /**
+       * Date of updated
+       */
+      userId: string;
+      /**
+       * Date of updated
+       */
+      role: string;
+    }
+
+    export interface User {
+      /**
+       * Unique Identifier
+       */
+      id: string;
+      /**
+       * Date of updated
+       */
+      signupDate: Date;
+      /**
+       * Date of updated
+       */
+      firstName: string;
+      /**
+       * Date of updated
+       */
+      lastName: string;
+      /**
+       * Date of updated
+       */
+      phoneBrand: string;
+      /**
+       * Date of updated
+       */
+      phoneCarrier: string;
+      /**
+       * Date of updated
+       */
+      phoneModel: string;
+      /**
+       * Date of updated
+       */
+      transportMode: string;
     }
 
 
-    export interface IWidgetsGetWidgetParams {
-      widgetId: number;
+    export interface ILocationsGetParams {
+      limit: number;
     }
-    export class WidgetsService extends ApiService {
+
+    export interface ILocationsGetStatsByUsersParams {
+      userIds: any;
+    }
+
+    export interface ILocationsGetStatsByUserParams {
+      userId: string;
+    }
+
+    export interface ILocationsGetStatsByUserShiftParams {
+      userId: string;
+      shiftId: string;
+    }
+
+    export interface IOrdersGetByUserParams {
+      userId: string;
+    }
+
+    export interface IShiftsGetByIdParams {
+      shiftId: string;
+    }
+
+    export interface IUsersGetUserShiftsParams {
+      userId: string;
+    }
+
+    export interface IUsersGetUserParams {
+      userId: string;
+    }
+    export class LocationsService extends ApiService {
+
+      public async get(_params: ILocationsGetParams) {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/locations`
+        };
+
+        requestParams.queryParameters = {
+          limit: _params.limit,
+        };
+        return this.executeRequest<Location[]>(requestParams);
+      }
+
+      public async getStatsByUsers(_params: ILocationsGetStatsByUsersParams) {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/locations/stats`
+        };
+
+        requestParams.queryParameters = {
+          userIds: _params.userIds,
+        };
+        return this.executeRequest<IUserStats>(requestParams);
+      }
+
+      public async getStatsByUser(_params: ILocationsGetStatsByUserParams) {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/locations/${_params.userId}/stats`
+        };
+        return this.executeRequest<ILocationStats>(requestParams);
+      }
+
+      public async getStatsByUserShift(_params: ILocationsGetStatsByUserShiftParams) {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/locations/${_params.userId}/${_params.shiftId}/stats`
+        };
+        return this.executeRequest<ILocationStats>(requestParams);
+      }
+    }
+    export class OrdersService extends ApiService {
 
       public async get() {
         const requestParams: IRequestParams = {
           method: 'GET',
-          url: `${baseApiUrl}/api/widgets`
+          url: `${baseApiUrl}/api/orders`
         };
-        return this.executeRequest<IWidget[]>(requestParams);
+        return this.executeRequest<Order[]>(requestParams);
       }
 
-      public async getWidget(_params: IWidgetsGetWidgetParams) {
+      public async getByUser(_params: IOrdersGetByUserParams) {
         const requestParams: IRequestParams = {
           method: 'GET',
-          url: `${baseApiUrl}/api/widgets/${_params.widgetId}`
+          url: `${baseApiUrl}/api/orders/${_params.userId}`
         };
-        return this.executeRequest<IWidget>(requestParams);
+        return this.executeRequest<Order[]>(requestParams);
+      }
+    }
+    export class ShiftsService extends ApiService {
+
+      public async get() {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/shifts`
+        };
+        return this.executeRequest<Shift[]>(requestParams);
+      }
+
+      public async getById(_params: IShiftsGetByIdParams) {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/shifts/${_params.shiftId}`
+        };
+        return this.executeRequest<Shift>(requestParams);
+      }
+    }
+    export class UsersService extends ApiService {
+
+      public async get() {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/users`
+        };
+        return this.executeRequest<User[]>(requestParams);
+      }
+
+      public async getUserShifts(_params: IUsersGetUserShiftsParams) {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/users/${_params.userId}/shifts`
+        };
+        return this.executeRequest<Shift[]>(requestParams);
+      }
+
+      public async getUser(_params: IUsersGetUserParams) {
+        const requestParams: IRequestParams = {
+          method: 'GET',
+          url: `${baseApiUrl}/api/users/${_params.userId}`
+        };
+        return this.executeRequest<User>(requestParams);
       }
     }
 }

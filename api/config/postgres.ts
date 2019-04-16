@@ -8,4 +8,6 @@ export const initializeDbConnection = async (name = "default") => {
   }
 
   connection = await createConnection(name);
+
+  return connection;
 };

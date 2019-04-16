@@ -15,6 +15,7 @@
     "typeorm": "ts-node -P ./api/tsconfig.json ./node_modules/.bin/typeorm",
     "db:migrate": "ts-node -P ./tsconfig-base.json ./dev/db/migrate.ts",
     "db:update": "yarn typeorm migration:run",
+    "db:revert": "yarn typeorm migration:revert",
     "test": "cross-env TS_NODE_PROJECT=./api/tsconfig.json mocha -t 15000 -r ts-node/register \"./api/**/*.spec.ts\""
   },
   "dependencies": {
@@ -25,12 +26,15 @@
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
     "pg": "^7.9.0",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-table": "^6.9.2",
     "reflect-metadata": "^0.1.13",
     "superagent": "^5.0.2",
     "tsoa": "^2.3.81",
-    "typeorm": "^0.2.16"
+    "typeorm": "^0.2.16",
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
@@ -44,9 +48,11 @@
     "@types/mini-css-extract-plugin": "^0.2.0",
     "@types/minimatch": "^3.0.3",
     "@types/mocha": "^5.2.6",
+    "@types/moment": "^2.13.0",
     "@types/node": "^11.13.0",
     "@types/react": "^16.8.12",
     "@types/react-dom": "^16.8.3",
+    "@types/react-table": "^6.8.1",
     "@types/readline-sync": "^1.4.3",
     "@types/superagent": "^4.1.1",
     "@types/webpack": "^4.4.27",

@@ -1,23 +1,74 @@
 /* tslint:disable */
 import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute } from 'tsoa';
-import { WidgetsController } from './controllers/widgets-controller';
+import { LocationsController } from './controllers/locations-controller';
+import { OrdersController } from './controllers/orders-controller';
+import { ShiftsController } from './controllers/shifts-controller';
+import { UsersController } from './controllers/users-controller';
 import * as express from 'express';
 
 const models: TsoaRoute.Models = {
-  "IWidget": {
+  "Location": {
     "properties": {
       "id": { "dataType": "double", "required": true },
-      "label": { "dataType": "string", "required": true },
-      "color": { "dataType": "string", "required": true },
+      "createdAt": { "dataType": "datetime", "required": true },
+      "latitude": { "dataType": "double", "required": true },
+      "longitude": { "dataType": "double", "required": true },
+      "speed": { "dataType": "double", "required": true },
+      "userId": { "dataType": "string", "required": true },
+      "isMoving": { "dataType": "boolean", "required": true },
+      "activityType": { "dataType": "string", "required": true },
+      "batteryLevel": { "dataType": "double", "required": true },
+    },
+  },
+  "ILocationStats": {
+    "properties": {
+      "average": { "dataType": "double", "required": true },
+      "count": { "dataType": "double", "required": true },
+      "sum": { "dataType": "double", "required": true },
+      "min": { "dataType": "object", "required": true },
+      "max": { "dataType": "object", "required": true },
+    },
+  },
+  "IUserStats": {
+    "additionalProperties": { "ref": "ILocationStats" },
+  },
+  "Order": {
+    "properties": {
+      "id": { "dataType": "string", "required": true },
+      "runnerId": { "dataType": "string", "required": true },
+      "pickedUpAt": { "dataType": "datetime", "required": true },
+      "dropoffTime": { "dataType": "datetime", "required": true },
+    },
+  },
+  "Shift": {
+    "properties": {
+      "id": { "dataType": "string", "required": true },
+      "start": { "dataType": "datetime", "required": true },
+      "stop": { "dataType": "datetime", "required": true },
+      "userId": { "dataType": "string", "required": true },
+      "role": { "dataType": "string", "required": true },
+    },
+  },
+  "User": {
+    "properties": {
+      "id": { "dataType": "string", "required": true },
+      "signupDate": { "dataType": "datetime", "required": true },
+      "firstName": { "dataType": "string", "required": true },
+      "lastName": { "dataType": "string", "required": true },
+      "phoneBrand": { "dataType": "string", "required": true },
+      "phoneCarrier": { "dataType": "string", "required": true },
+      "phoneModel": { "dataType": "string", "required": true },
+      "transportMode": { "dataType": "string", "required": true },
     },
   },
 };
 const validationService = new ValidationService(models);
 
 export function RegisterRoutes(app: express.Express) {
-  app.get('/api/widgets',
+  app.get('/api/locations',
     function(request: any, response: any, next: any) {
       const args = {
+        limit: { "in": "query", "name": "limit", "required": true, "dataType": "double" },
       };
 
       let validatedArgs: any[] = [];
@@ -27,16 +78,16 @@ export function RegisterRoutes(app: express.Express) {
         return next(err);
       }
 
-      const controller = new WidgetsController();
+      const controller = new LocationsController();
 
 
-      const promise = controller.GetWidgets.apply(controller, validatedArgs as any);
+      const promise = controller.Get.apply(controller, validatedArgs as any);
       promiseHandler(controller, promise, response, next);
     });
-  app.get('/api/widgets/:widgetId',
+  app.get('/api/locations/stats',
     function(request: any, response: any, next: any) {
       const args = {
-        widgetId: { "in": "path", "name": "widgetId", "required": true, "dataType": "double" },
+        userIds: { "in": "query", "name": "userIds", "required": true, "dataType": "array", "array": { "dataType": "string" } },
       };
 
       let validatedArgs: any[] = [];
@@ -46,10 +97,179 @@ export function RegisterRoutes(app: express.Express) {
         return next(err);
       }
 
-      const controller = new WidgetsController();
+      const controller = new LocationsController();
 
 
-      const promise = controller.GetWidget.apply(controller, validatedArgs as any);
+      const promise = controller.GetStatsByUsers.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/locations/:userId/stats',
+    function(request: any, response: any, next: any) {
+      const args = {
+        userId: { "in": "path", "name": "userId", "required": true, "dataType": "string" },
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new LocationsController();
+
+
+      const promise = controller.GetStatsByUser.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/locations/:userId/:shiftId/stats',
+    function(request: any, response: any, next: any) {
+      const args = {
+        userId: { "in": "path", "name": "userId", "required": true, "dataType": "string" },
+        shiftId: { "in": "path", "name": "shiftId", "required": true, "dataType": "string" },
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new LocationsController();
+
+
+      const promise = controller.GetStatsByUserShift.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/orders',
+    function(request: any, response: any, next: any) {
+      const args = {
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new OrdersController();
+
+
+      const promise = controller.Get.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/orders/:userId',
+    function(request: any, response: any, next: any) {
+      const args = {
+        userId: { "in": "path", "name": "userId", "required": true, "dataType": "string" },
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new OrdersController();
+
+
+      const promise = controller.GetByUser.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/shifts',
+    function(request: any, response: any, next: any) {
+      const args = {
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new ShiftsController();
+
+
+      const promise = controller.Get.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/shifts/:shiftId',
+    function(request: any, response: any, next: any) {
+      const args = {
+        shiftId: { "in": "path", "name": "shiftId", "required": true, "dataType": "string" },
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new ShiftsController();
+
+
+      const promise = controller.GetById.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/users',
+    function(request: any, response: any, next: any) {
+      const args = {
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new UsersController();
+
+
+      const promise = controller.Get.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/users/:userId/shifts',
+    function(request: any, response: any, next: any) {
+      const args = {
+        userId: { "in": "path", "name": "userId", "required": true, "dataType": "string" },
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new UsersController();
+
+
+      const promise = controller.GetUserShifts.apply(controller, validatedArgs as any);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/api/users/:userId',
+    function(request: any, response: any, next: any) {
+      const args = {
+        userId: { "in": "path", "name": "userId", "required": true, "dataType": "string" },
+      };
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller = new UsersController();
+
+
+      const promise = controller.GetUser.apply(controller, validatedArgs as any);
       promiseHandler(controller, promise, response, next);
     });
 

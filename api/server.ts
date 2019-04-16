@@ -3,11 +3,16 @@ import chalk from "chalk";
 import express from "express";
 import http from "http";
 import methodOverride from "method-override";
-import "./controllers/widgets-controller";
+
+import "./controllers/locations-controller";
+import "./controllers/orders-controller";
+import "./controllers/shifts-controller";
+import "./controllers/users-controller";
 import { RegisterRoutes } from "./routes";
 import { log } from "./utils/log";
+import { initializeDbConnection } from "./config/postgres";
 
-export const server = () => {
+export const server = async () => {
   const app = express()
     .use(bodyParser.urlencoded({ extended: true }))
     .use(bodyParser.json())
@@ -50,6 +55,8 @@ export const server = () => {
   );
 
   const port = 3000;
+
+  await initializeDbConnection();
 
   return new Promise<http.Server>((resolve) => {
     const s = app.listen(port, () => {

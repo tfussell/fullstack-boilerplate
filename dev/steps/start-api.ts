@@ -16,7 +16,11 @@ export const startApi = async () => {
   }
 
   server = undefined;
+
   Object.keys(require.cache).forEach((key) => {
+    if (key.endsWith("/fullstack-boilerplate/api/config/postgres.ts")) {
+      return;
+    }
     if (minimatch(key, "*.ts", { matchBase: true })) {
       delete require.cache[key];
     }

@@ -1,5 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+// tslint:disable-next-line: no-submodule-imports
+import "react-table/react-table.css";
+
 import { Api } from "./api/api";
 import { App } from "./app/app";
 import "./index.scss";

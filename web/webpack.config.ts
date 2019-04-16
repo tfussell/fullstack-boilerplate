@@ -43,7 +43,7 @@ const config: webpack.Configuration = {
     new HtmlWebpackPlugin({
       chunks: ["index"],
       template: path.join(srcPath, "index.ejs"),
-      title: "<PAGE TITLE>",
+      title: "Habitat Runner Geolocation Auditing",
     }),
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
